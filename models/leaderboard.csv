@@ -1,0 +1,15 @@
+model,phase,val_accuracy,path
+ResNet50,stage1,0.7393965125083923,D:\diabetic-retinopathy-project\models\ResNet50_stage1.h5
+InceptionV3,stage1,0.7393965125083923,D:\diabetic-retinopathy-project\models\InceptionV3_stage1.h5
+DenseNet121,stage1,0.7423854470252991,D:\diabetic-retinopathy-project\models\DenseNet121_stage1.h5
+MobileNetV2,stage1,0.7433817386627197,D:\diabetic-retinopathy-project\models\MobileNetV2_stage1.h5
+VGG16,stage1,0.7393965125083923,D:\diabetic-retinopathy-project\models\VGG16_stage1.h5
+Xception,stage1,0.7422431111335754,D:\diabetic-retinopathy-project\models\Xception_stage1.h5
+ResNet50,stage1,0.7393965125083923,D:\diabetic-retinopathy-project\models\ResNet50_stage1.h5
+InceptionV3,stage1,0.7393965125083923,D:\diabetic-retinopathy-project\models\InceptionV3_stage1.h5
+DenseNet121,stage1,0.7399658560752869,D:\diabetic-retinopathy-project\models\DenseNet121_stage1.h5
+MobileNetV2,stage1,0.7392541766166687,D:\diabetic-retinopathy-project\models\MobileNetV2_stage1.h5
+VGG16,stage1,0.7393965125083923,D:\diabetic-retinopathy-project\models\VGG16_stage1.h5
+Xception,stage1,0.7398235201835632,D:\diabetic-retinopathy-project\models\Xception_stage1.h5
+InceptionV3,tuned,0.7396811842918396,D:\diabetic-retinopathy-project\models\InceptionV3_tuned.h5
+ResNet50,tuned,0.7393965125083923,D:\diabetic-retinopathy-project\models\ResNet50_tuned.h5

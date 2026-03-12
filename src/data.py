@@ -121,7 +121,7 @@ def load_data_ready(debug=True):
     # Class weights (to handle imbalance)
     class_counts = train_df["level"].value_counts().to_dict()
     max_count = max(class_counts.values())
-    class_weights = {cls: max_count / count for cls, count in class_counts.items()}
+    class_weights = {int(cls): max_count / count for cls, count in class_counts.items()}
 
     if debug:
         print("\n[DEBUG] === Generator Sanity Check ===")

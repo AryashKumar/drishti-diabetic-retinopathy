@@ -37,7 +37,13 @@ def build_model(
         print(f"[DEBUG] Input shape set to: {input_shape}")
 
     # Use backbone input directly to avoid channel mismatch
-    backbone = backbone_cls(weights="imagenet", include_top=False, input_shape=input_shape)
+    weights = "imagenet"
+    if arch_name == "EfficientNetB0":
+        weights = None
+    backbone = backbone_cls(
+    weights=weights,
+    include_top=False,
+    input_shape=input_shape)
     backbone.trainable = trainable_backbone
 
     x = layers.GlobalAveragePooling2D()(backbone.output)

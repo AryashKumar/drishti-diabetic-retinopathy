@@ -39,15 +39,16 @@ def predict_image(model, img_path):
 
     return predicted_class, probs
 
+MODEL = load_best_model()
+
 def predict_single(img_path):
     """Predict on one image and return dict with class & probs"""
-    model = load_best_model()
-    predicted_class, probs = predict_image(model, img_path)
+    
+    predicted_class, probs = predict_image(MODEL, img_path)
     return {"class": predicted_class, "probs": probs.tolist()}
 
 def predict_pair(left_path, right_path):
     """Predict on left/right images and return dict for both."""
-    model = load_best_model()
     return {
         "left": predict_single(left_path),
         "right": predict_single(right_path)

@@ -1,54 +1,117 @@
-# src/api.py
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import JSONResponse
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
-import tempfile, shutil, os
-
-from .inference import load_best_model, predict_image
-from .config import CLASS_NAMES, LEADERBOARD, REPORT_MD
-from .metrics_utils import write_comparison_report
-
-app = FastAPI(title="Diabetic Retinopathy Prediction API")
-
-# Load the trained model once at startup
-MODEL = load_best_model()
-
-# Load leaderboard & get best model info
-try:
-    BEST_INFO = write_comparison_report(LEADERBOARD, report_path=REPORT_MD)
-except Exception as e:
-    print(f"[WARN] Leaderboard not found or unreadable: {e}")
-    BEST_INFO = {"best_model": "unknown", "val_accuracy": 0.0, "model_path": None}
+from sklearn.metrics import confusion_matrix, classification_report
 
 
-@app.get("/")
-def root():
-    return {"status": "API running", "docs": "/docs"}
+# ------------------------------
+# Ensure directories exist
+# ------------------------------
+def ensure_dirs(path):
+    os.makedirs(path, exist_ok=True)
 
 
-@app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    """
-    Accept a single image and return:
-    - predicted class
-    - probability vector
-    - best model info
-    """
-    # Save uploaded image temporarily
-    with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[-1]) as tmp:
-        shutil.copyfileobj(file.file, tmp)
-        temp_path = tmp.name
+# ------------------------------
+# Plot training curves
+# ------------------------------
+def plot_training_curves(history, out_path="training_curves.png", title="Training Curves"):
+    hist = history.history
 
-    # Run prediction
-    predicted_class, probs = predict_image(MODEL, temp_path)
-    os.remove(temp_path)
+    acc = hist.get("accuracy", [])
+    val_acc = hist.get("val_accuracy", [])
+    loss = hist.get("loss", [])
+    val_loss = hist.get("val_loss", [])
 
-    # Prepare JSON response
-    return JSONResponse({
-        "predicted_class": predicted_class,
-        "probabilities": probs.tolist(),
-        "class_names": CLASS_NAMES,
-        "best_model": BEST_INFO.get("best_model"),
-        "val_accuracy": BEST_INFO.get("val_accuracy"),
-        "model_path": BEST_INFO.get("model_path")
-    })
+    plt.figure(figsize=(10, 4))
+
+    # Accuracy
+    plt.subplot(1, 2, 1)
+    plt.plot(acc, label="train_acc")
+    plt.plot(val_acc, label="val_acc")
+    plt.title("Accuracy")
+    plt.legend()
+
+    # Loss
+    plt.subplot(1, 2, 2)
+    plt.plot(loss, label="train_loss")
+    plt.plot(val_loss, label="val_loss")
+    plt.title("Loss")
+    plt.legend()
+
+    plt.suptitle(title)
+    plt.tight_layout()
+    plt.savefig(out_path)
+    plt.close()
+
+
+# ------------------------------
+# Evaluate model + confusion matrix
+# ------------------------------
+def evaluate_and_plots(model, val_gen, out_conf="confusion_matrix.png"):
+    preds = model.predict(val_gen)
+    y_pred = np.argmax(preds, axis=1)
+    y_true = val_gen.classes
+
+    cm = confusion_matrix(y_true, y_pred)
+
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.title("Confusion Matrix")
+    plt.tight_layout()
+    plt.savefig(out_conf)
+    plt.close()
+
+    print("\nClassification Report:")
+    print(classification_report(y_true, y_pred))
+
+
+# ------------------------------
+# Append experiment results
+# ------------------------------
+def append_leaderboard(csv_path, row_dict):
+    df_new = pd.DataFrame([row_dict])
+
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path)
+        df = pd.concat([df, df_new], ignore_index=True)
+    else:
+        df = df_new
+
+    df.to_csv(csv_path, index=False)
+
+
+# ------------------------------
+# Write comparison report
+# ------------------------------
+def write_comparison_report(leaderboard_path, report_path="comparison_report.md"):
+    if not os.path.exists(leaderboard_path):
+        raise FileNotFoundError("Leaderboard file not found.")
+
+    df = pd.read_csv(leaderboard_path)
+
+    best = df.sort_values("val_accuracy", ascending=False).iloc[0]
+
+    report = f"""
+# Model Comparison Report
+
+## Best Model
+- Model: {best['model']}
+- Validation Accuracy: {best['val_accuracy']}
+- Model Path: {best['path']}
+
+## Leaderboard
+{df.to_markdown(index=False)}
+"""
+
+    with open(report_path, "w") as f:
+        f.write(report)
+
+    return {
+        "best_model": best["model"],
+        "val_accuracy": float(best["val_accuracy"]),
+        "model_path": best["path"]
+    }

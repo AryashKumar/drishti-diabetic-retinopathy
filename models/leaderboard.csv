@@ -13,3 +13,10 @@ VGG16,stage1,0.7393965125083923,D:\diabetic-retinopathy-project\models\VGG16_sta
 Xception,stage1,0.7398235201835632,D:\diabetic-retinopathy-project\models\Xception_stage1.h5
 InceptionV3,tuned,0.7396811842918396,D:\diabetic-retinopathy-project\models\InceptionV3_tuned.h5
 ResNet50,tuned,0.7393965125083923,D:\diabetic-retinopathy-project\models\ResNet50_tuned.h5
+EfficientNetB0,stage1,0.0664674043655395,D:\diabetic-retinopathy-project\models\EfficientNetB0_stage1.h5
+ResNet50,stage1,0.1500142365694046,D:\diabetic-retinopathy-project\models\ResNet50_stage1.h5
+InceptionV3,stage1,0.6450327634811401,D:\diabetic-retinopathy-project\models\InceptionV3_stage1.h5
+DenseNet121,stage1,0.1279533207416534,D:\diabetic-retinopathy-project\models\DenseNet121_stage1.h5
+MobileNetV2,stage1,0.4117563366889953,D:\diabetic-retinopathy-project\models\MobileNetV2_stage1.h5
+VGG16,stage1,0.4403643608093261,D:\diabetic-retinopathy-project\models\VGG16_stage1.h5
+Xception,stage1,0.22317108511924744,D:\diabetic-retinopathy-project\models\Xception_stage1.h5
